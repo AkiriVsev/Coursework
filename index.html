@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Курсова робота</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Ліва панель - Сортування -->
+        <div class="sort-panel">
+            <h2>Сортування</h2>
+            
+            <div class="sort-section">
+                <h3>Поле сортування</h3>
+                <div class="sort-buttons" id="sortFieldButtons">
+                    <button class="sort-btn" data-field="lastName">Прізвище</button>
+                    <button class="sort-btn" data-field="firstName">Ім'я</button>
+                    <button class="sort-btn" data-field="middleName">По-батькові</button>
+                    <button class="sort-btn" data-field="phone">Телефон</button>
+                    <button class="sort-btn" data-field="email">Email</button>
+                    <button class="sort-btn" data-field="birthDate">Дата народження</button>
+                    <button class="sort-btn" data-field="group">Група</button>
+                    <button class="sort-btn" data-field="averageGrade">Середній бал</button>
+                </div>
+            </div>
+
+            <div class="sort-section">
+                <h3>Напрямок</h3>
+                <div class="sort-buttons" id="sortDirectionButtons">
+                    <button class="sort-btn" data-direction="asc">Від найменшого до найбільшого</button>
+                    <button class="sort-btn" data-direction="desc">Від найбільшого до найменшого</button>
+                </div>
+            </div>
+
+            <button class="apply-btn" onclick="applySorting()">Застосувати сортування</button>
+            <button class="apply-btn clear-sort-btn" onclick="clearSorting()">Очистити сортування</button>
+        </div>
+
+        <!-- Центральна панель -->
+        <div class="main-panel">
+            <!-- Фільтр по групах -->
+            <div class="search-filter-section">
+                <h3>Фільтр по групах</h3>
+                <div class="filter-group">
+                    <input type="text" id="groupFilter" placeholder="Введіть назву групи або її частину">
+                    <button onclick="filterByGroup()">Фільтрувати</button>
+                    <button class="reset-btn" onclick="resetFilter()">Скинути</button>
+                </div>
+            </div>
+
+            <!-- Список студентів -->
+            <div class="students-container" id="studentsContainer">
+                <!-- Студенти будуть додаватися динамічно -->
+            </div>
+
+            <!-- Лічильник студентів -->
+            <div class="students-count">
+                Кількість студентів у списку: <strong id="studentCount">0</strong>
+            </div>
+        </div>
+
+        <!-- Права панель - Форма додавання -->
+        <div class="add-panel">
+            <h2>Дані про нового студента</h2>
+            <div id="formError"></div>
+            
+            <div class="form-group">
+                <label>Прізвище</label>
+                <input type="text" id="lastName" placeholder="Введіть прізвище">
+            </div>
+
+            <div class="form-group">
+                <label>Ім'я</label>
+                <input type="text" id="firstName" placeholder="Введіть ім'я">
+            </div>
+
+            <div class="form-group">
+                <label>По-батькові</label>
+                <input type="text" id="middleName" placeholder="Введіть по-батькові">
+            </div>
+
+            <div class="form-group">
+                <label>Номер телефону</label>
+                <input type="tel" id="phone" placeholder="+380XXXXXXXXX">
+            </div>
+
+            <div class="form-group">
+                <label>Електрона пошта</label>
+                <input type="email" id="email" placeholder="example@email.com">
+            </div>
+
+            <div class="form-group">
+                <label>Дата народження</label>
+                <input type="date" id="birthDate">
+            </div>
+
+            <div class="form-group">
+                <label>Група</label>
+                <input type="text" id="group" placeholder="Наприклад: П-32">
+            </div>
+
+            <div class="form-group">
+                <label>Оцінки (введіть через пробіл)</label>
+                <input type="text" id="grades" placeholder="90 85 92 88">
+            </div>
+
+            <div class="form-actions">
+                <button class="form-btn add-student-btn" onclick="addStudent()">Додати студента</button>
+                <button class="form-btn clear-form-btn" onclick="clearForm()">Очистити форму</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальне вікно для редагування оцінок -->
+    <div class="modal" id="gradesModal">
+        <div class="modal-content">
+            <h3>Редагування оцінок</h3>
+            <p class="grades-info">Введіть оцінки через пробіл (наприклад: 90 85 92 88)</p>
+            <div id="modalError"></div>
+            <textarea id="gradesInput" placeholder="90 85 92 88"></textarea>
+            <div class="modal-actions">
+                <button class="modal-btn save-grades-btn" onclick="saveGrades()">Зберегти</button>
+                <button class="modal-btn cancel-btn" onclick="closeGradesModal()">Скасувати</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальне вікно для редагування студента -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <h3>Редагування студента</h3>
+            <div id="editError"></div>
+            
+            <div class="form-group">
+                <label>Прізвище</label>
+                <input type="text" id="editLastName">
+            </div>
+
+            <div class="form-group">
+                <label>Ім'я</label>
+                <input type="text" id="editFirstName">
+            </div>
+
+            <div class="form-group">
+                <label>По-батькові</label>
+                <input type="text" id="editMiddleName">
+            </div>
+
+            <div class="form-group">
+                <label>Номер телефону</label>
+                <input type="tel" id="editPhone">
+            </div>
+
+            <div class="form-group">
+                <label>Електрона пошта</label>
+                <input type="email" id="editEmail">
+            </div>
+
+            <div class="form-group">
+                <label>Дата народження</label>
+                <input type="date" id="editBirthDate">
+            </div>
+
+            <div class="form-group">
+                <label>Група</label>
+                <input type="text" id="editGroup">
+            </div>
+
+            <div class="form-group">
+                <label>Оцінки (через пробіл)</label>
+                <input type="text" id="editGrades">
+            </div>
+
+            <div class="modal-actions">
+                <button class="modal-btn save-grades-btn" onclick="saveEditedStudent()">Зберегти зміни</button>
+                <button class="modal-btn cancel-btn" onclick="closeEditModal()">Скасувати</button>
+            </div>
+        </div>
+    </div>
+    <script src="./js/script.js"></script>
+</body>
+</html>
