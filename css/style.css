@@ -108,27 +108,28 @@ body {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  min-width: 0;
 }
 
-.search-filter-section {
+.search-section {
   background: white;
   border-radius: 15px;
   padding: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
-.search-filter-section h3 {
+.search-section h3 {
   color: #667eea;
   margin-bottom: 15px;
 }
 
-.filter-group {
+.search-group {
   display: flex;
   gap: 10px;
   align-items: center;
 }
 
-.filter-group input {
+.search-group input {
   flex: 1;
   padding: 10px 15px;
   border: 2px solid #e0e0e0;
@@ -136,7 +137,7 @@ body {
   font-size: 14px;
 }
 
-.filter-group button {
+.search-group button {
   padding: 10px 20px;
   background: #667eea;
   color: white;
@@ -145,17 +146,18 @@ body {
   cursor: pointer;
   font-size: 14px;
   transition: all 0.3s;
+  white-space: nowrap;
 }
 
-.filter-group button:hover {
+.search-group button:hover {
   background: #5568d3;
 }
 
-.filter-group button.reset-btn {
+.search-group button.reset-btn {
   background: #95a5a6;
 }
 
-.filter-group button.reset-btn:hover {
+.search-group button.reset-btn:hover {
   background: #7f8c8d;
 }
 
@@ -187,6 +189,8 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .student-name {
@@ -229,7 +233,7 @@ body {
 
 .student-info {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 8px;
   font-size: 14px;
   color: #555;
@@ -289,7 +293,8 @@ body {
   font-size: 14px;
 }
 
-.form-group input {
+.form-group input,
+.form-group select {
   width: 100%;
   padding: 10px;
   border: 2px solid #e0e0e0;
@@ -298,7 +303,8 @@ body {
   transition: border-color 0.3s;
 }
 
-.form-group input:focus {
+.form-group input:focus,
+.form-group select:focus {
   outline: none;
   border-color: #667eea;
 }
@@ -350,6 +356,7 @@ body {
   z-index: 1000;
   justify-content: center;
   align-items: center;
+  padding: 20px;
 }
 
 .modal.active {
@@ -361,10 +368,10 @@ body {
   padding: 30px;
   border-radius: 15px;
   max-width: 500px;
-  max-height: 90%;
-  width: 90%;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-height: 90vh;
   overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
 
 .modal-content h3 {
@@ -432,6 +439,74 @@ body {
   margin-bottom: 10px;
 }
 
-@media screen and (max-width: 800px) {
-  
+/* Адаптивна верстка */
+@media (max-width: 1400px) {
+  .container {
+    flex-wrap: wrap;
+  }
+
+  .sort-panel,
+  .add-panel {
+    width: 100%;
+    max-height: 400px;
+  }
+
+  .main-panel {
+    width: 100%;
+    height: auto;
+    min-height: 500px;
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    padding: 10px;
+  }
+
+  .container {
+    gap: 10px;
+  }
+
+  .sort-panel,
+  .add-panel {
+    padding: 15px;
+  }
+
+  .student-info {
+    grid-template-columns: 1fr;
+  }
+
+  .student-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .search-group {
+    flex-direction: column;
+  }
+
+  .search-group input,
+  .search-group button {
+    width: 100%;
+  }
+
+  .modal-content {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sort-panel h2,
+  .add-panel h2 {
+    font-size: 18px;
+  }
+
+  .student-name {
+    font-size: 16px;
+  }
+
+  .action-btn {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
 }

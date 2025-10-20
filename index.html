@@ -17,12 +17,10 @@
                 <div class="sort-buttons" id="sortFieldButtons">
                     <button class="sort-btn" data-field="lastName">Прізвище</button>
                     <button class="sort-btn" data-field="firstName">Ім'я</button>
-                    <button class="sort-btn" data-field="middleName">По-батькові</button>
-                    <button class="sort-btn" data-field="phone">Телефон</button>
-                    <button class="sort-btn" data-field="email">Email</button>
                     <button class="sort-btn" data-field="birthDate">Дата народження</button>
                     <button class="sort-btn" data-field="group">Група</button>
                     <button class="sort-btn" data-field="averageGrade">Середній бал</button>
+                    <button class="sort-btn" data-field="educationType">Форма навчання</button>
                 </div>
             </div>
 
@@ -40,13 +38,13 @@
 
         <!-- Центральна панель -->
         <div class="main-panel">
-            <!-- Фільтр по групах -->
-            <div class="search-filter-section">
-                <h3>Фільтр по групах</h3>
-                <div class="filter-group">
-                    <input type="text" id="groupFilter" placeholder="Введіть назву групи або її частину">
-                    <button onclick="filterByGroup()">Фільтрувати</button>
-                    <button class="reset-btn" onclick="resetFilter()">Скинути</button>
+            <!-- Пошук -->
+            <div class="search-section">
+                <h3>Пошук студента</h3>
+                <div class="search-group">
+                    <input type="text" id="searchInput" placeholder="Введіть дані для пошуку (ім'я, прізвище, група, телефон тощо)">
+                    <button onclick="searchStudents()">Шукати</button>
+                    <button class="reset-btn" onclick="resetSearch()">Скинути</button>
                 </div>
             </div>
 
@@ -102,6 +100,20 @@
             </div>
 
             <div class="form-group">
+                <label>Місце проживання</label>
+                <input type="text" id="address" placeholder="Місто, вулиця">
+            </div>
+
+            <div class="form-group">
+                <label>Форма навчання</label>
+                <select id="educationType">
+                    <option value="">Оберіть форму навчання</option>
+                    <option value="Бюджет">Бюджет</option>
+                    <option value="Контракт">Контракт</option>
+                </select>
+            </div>
+
+            <div class="form-group">
                 <label>Оцінки (введіть через пробіл)</label>
                 <input type="text" id="grades" placeholder="90 85 92 88">
             </div>
@@ -109,20 +121,6 @@
             <div class="form-actions">
                 <button class="form-btn add-student-btn" onclick="addStudent()">Додати студента</button>
                 <button class="form-btn clear-form-btn" onclick="clearForm()">Очистити форму</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Модальне вікно для редагування оцінок -->
-    <div class="modal" id="gradesModal">
-        <div class="modal-content">
-            <h3>Редагування оцінок</h3>
-            <p class="grades-info">Введіть оцінки через пробіл (наприклад: 90 85 92 88)</p>
-            <div id="modalError"></div>
-            <textarea id="gradesInput" placeholder="90 85 92 88"></textarea>
-            <div class="modal-actions">
-                <button class="modal-btn save-grades-btn" onclick="saveGrades()">Зберегти</button>
-                <button class="modal-btn cancel-btn" onclick="closeGradesModal()">Скасувати</button>
             </div>
         </div>
     </div>
@@ -166,6 +164,19 @@
             <div class="form-group">
                 <label>Група</label>
                 <input type="text" id="editGroup">
+            </div>
+
+            <div class="form-group">
+                <label>Місце проживання</label>
+                <input type="text" id="editAddress">
+            </div>
+
+            <div class="form-group">
+                <label>Форма навчання</label>
+                <select id="editEducationType">
+                    <option value="Бюджет">Бюджет</option>
+                    <option value="Контракт">Контракт</option>
+                </select>
             </div>
 
             <div class="form-group">
