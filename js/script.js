@@ -767,6 +767,90 @@ function resetSearch() {
   displayStudents();
 }
 
+/**
+ * Функція для завантаження списку студентів у форматі .txt
+ */
+function downloadStudentsList() {
+  let students = studentGroup.getAllStudents();
+
+  // Застосування пошуку
+  if (currentSearchTerm) {
+    students = studentGroup.searchStudents(currentSearchTerm);
+  }
+
+  // Застосування сортування
+  if (selectedSortFields.length > 0 && currentSortDirection) {
+    // Якщо вибрано і прізвище, і ім'я - сортуємо одночасно
+    if (
+      selectedSortFields.includes("lastName") &&
+      selectedSortFields.includes("firstName")
+    ) {
+      students = studentGroup.sortStudents(
+        ["lastName", "firstName"],
+        currentSortDirection
+      );
+    } else if (selectedSortFields.length === 1) {
+      students = studentGroup.sortStudents(
+        selectedSortFields[0],
+        currentSortDirection
+      );
+    } else {
+      // Інші комбінації - сортування за першим полем
+      students = studentGroup.sortStudents(
+        selectedSortFields[0],
+        currentSortDirection
+      );
+    }
+  }
+
+  // Перевірка чи є студенти для завантаження
+  if (students.length === 0) {
+    alert("Немає студентів для завантаження!");
+    return;
+  }
+
+  // Формування тексту файлу
+  let fileContent = "";
+
+  students.forEach((student, index) => {
+    const studentNumber = index + 1;
+    fileContent += `==========================${studentNumber}==========================\n`;
+    fileContent += `ПІБ: ${student.lastName} ${student.firstName} ${student.middleName}\n`;
+    fileContent += `Номер телефону: ${student.phone}\n`;
+    fileContent += `Електрона пошта: ${student.email}\n`;
+    fileContent += `Дата народження: ${student.birthDate}\n`;
+    fileContent += `Група: ${student.group}\n`;
+    fileContent += `Місце проживання: ${student.address}\n`;
+    fileContent += `Форма навчання: ${student.educationType}\n`;
+    fileContent += `Середньо статистична оцінка: ${student.averageGrade}\n`;
+    fileContent += `Оцінки студента: ${student.grades.join(", ")}\n`;
+    fileContent += `=====================================================\n\n`;
+  });
+
+  // Створення Blob об'єкту
+  const blob = new Blob([fileContent], { type: "text/plain;charset=utf-8" });
+
+  // Створення посилання для завантаження
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+
+  // Генерація назви файлу з поточною датою та часом
+  const now = new Date();
+  const dateStr = now.toLocaleDateString("uk-UA").replace(/\./g, "-");
+  const timeStr = now
+    .toLocaleTimeString("uk-UA", { hour: "2-digit", minute: "2-digit" })
+    .replace(/:/g, "-");
+  link.download = `Список_студентів_${dateStr}_${timeStr}.txt`;
+
+  // Симуляція кліку для завантаження
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+  // Очищення URL об'єкту
+  URL.revokeObjectURL(link.href);
+}
+
 // Початкове відображення студентів при завантаженні сторінки
 displayStudents();
 

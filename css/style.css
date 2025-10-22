@@ -264,6 +264,16 @@ body {
   font-size: 24px;
 }
 
+/* Центральна панель - кнопка завантаження списку студентів*/
+
+.download-panel {
+  background: white;
+  border-radius: 15px;
+  padding: 15px 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
 /* Права панель - Форма додавання */
 .add-panel {
   width: 320px;
@@ -476,8 +486,7 @@ body {
 
   .students-container,
   .students-count,
-  .search-section
-   {
+  .search-section {
     border-radius: 0px;
   }
 
