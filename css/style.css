@@ -473,11 +473,6 @@ body {
     padding: 0px;
   }
 
-  .main-panel,
-  .container {
-    gap: 5px;
-  }
-
   .sort-panel,
   .add-panel {
     padding: 15px;
@@ -486,7 +481,8 @@ body {
 
   .students-container,
   .students-count,
-  .search-section {
+  .search-section,
+  .download-panel {
     border-radius: 0px;
   }
 
