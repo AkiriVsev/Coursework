@@ -851,6 +851,222 @@ function downloadStudentsList() {
   URL.revokeObjectURL(link.href);
 }
 
+/**
+ * Функція для обробки завантаження файлу
+ */
+function handleFileUpload(event) {
+  const file = event.target.files[0];
+  const statusDiv = document.getElementById("uploadStatus");
+
+  if (!file) return;
+
+  // Перевірка типу файлу
+  if (!file.name.endsWith(".txt")) {
+    statusDiv.innerHTML =
+      '<div class="upload-error">❌ Помилка: Файл повинен мати формат .txt</div>';
+    setTimeout(() => (statusDiv.innerHTML = ""), 5000);
+    return;
+  }
+
+  // Читання файлу
+  const reader = new FileReader();
+
+  reader.onload = function (e) {
+    try {
+      const content = e.target.result;
+      const result = parseStudentsFromFile(content);
+
+      if (result.success) {
+        statusDiv.innerHTML = `<div class="success-message">✅ Успішно завантажено: ${result.added} студентів<br>⚠️ Пропущено (дублікати): ${result.skipped}</div>`;
+        displayStudents();
+
+        // Очищення input для можливості завантаження того ж файлу знову
+        event.target.value = "";
+
+        setTimeout(() => (statusDiv.innerHTML = ""), 10000);
+      } else {
+        statusDiv.innerHTML = `<div class="upload-error">❌ ${result.error}</div>`;
+        event.target.value = "";
+        setTimeout(() => (statusDiv.innerHTML = ""), 7000);
+      }
+    } catch (error) {
+      statusDiv.innerHTML =
+        '<div class="upload-error">❌ Помилка: Не вдалося обробити файл. Перевірте формат даних.</div>';
+      event.target.value = "";
+      setTimeout(() => (statusDiv.innerHTML = ""), 7000);
+    }
+  };
+
+  reader.onerror = function () {
+    statusDiv.innerHTML =
+      '<div class="upload-error">❌ Помилка читання файлу</div>';
+    event.target.value = "";
+    setTimeout(() => (statusDiv.innerHTML = ""), 5000);
+  };
+
+  reader.readAsText(file, "UTF-8");
+}
+
+/**
+ * Функція для парсингу студентів з текстового файлу
+ */
+function parseStudentsFromFile(content) {
+  try {
+    // Розділення на блоки студентів
+    const studentBlocks = content.split(
+      "====================================================="
+    );
+    const students = [];
+    let addedCount = 0;
+    let skippedCount = 0;
+
+    for (let block of studentBlocks) {
+      block = block.trim();
+      if (!block) continue;
+
+      // Перевірка формату блоку
+      if (
+        !block.includes("ПІБ:") ||
+        !block.includes("Номер телефону:") ||
+        !block.includes("Дата народження:") ||
+        !block.includes("Група:")
+      ) {
+        return {
+          success: false,
+          error:
+            "Помилка: Формат даних не відповідає очікуваному. Перевірте структуру файлу.",
+        };
+      }
+
+      try {
+        // Парсинг ПІБ
+        const pibMatch = block.match(/ПІБ:\s*(.+)/);
+        if (!pibMatch) throw new Error("Не знайдено ПІБ");
+        const pibParts = pibMatch[1].trim().split(/\s+/);
+        if (pibParts.length < 3) throw new Error("Неповний ПІБ");
+
+        const lastName = pibParts[0];
+        const firstName = pibParts[1];
+        const middleName = pibParts.slice(2).join(" ");
+
+        // Парсинг телефону та email
+        const phoneEmailMatch = block.match(
+          /Номер телефону:\s*(\S+)\s+Електрона пошта:\s*(\S+)/
+        );
+        if (!phoneEmailMatch) throw new Error("Не знайдено телефон або email");
+        const phone = phoneEmailMatch[1];
+        const email = phoneEmailMatch[2];
+
+        // Парсинг дати народження
+        const birthDateMatch = block.match(/Дата народження:\s*(.+)/);
+        if (!birthDateMatch) throw new Error("Не знайдено дату народження");
+        const birthDate = birthDateMatch[1].trim();
+
+        // Парсинг групи
+        const groupMatch = block.match(/Група:\s*(.+)/);
+        if (!groupMatch) throw new Error("Не знайдено групу");
+        const group = groupMatch[1].trim();
+
+        // Парсинг місця проживання
+        const addressMatch = block.match(/Місце проживання:\s*(.+)/);
+        if (!addressMatch) throw new Error("Не знайдено місце проживання");
+        const address = addressMatch[1].trim();
+
+        // Парсинг форми навчання
+        const educationTypeMatch = block.match(/Форма навчання:\s*(.+)/);
+        if (!educationTypeMatch) throw new Error("Не знайдено форму навчання");
+        const educationType = educationTypeMatch[1].trim();
+
+        // Парсинг оцінок
+        const gradesMatch = block.match(/Оцінки студента:\s*(.+)/);
+        if (!gradesMatch) throw new Error("Не знайдено оцінки");
+        const gradesString = gradesMatch[1].trim();
+        const grades = gradesString
+          .split(/[,\s]+/)
+          .map((g) => parseFloat(g.trim()))
+          .filter((g) => !isNaN(g));
+
+        if (grades.length === 0) throw new Error("Немає валідних оцінок");
+
+        // Валідація email та телефону
+        if (!validateEmail(email)) {
+          console.warn(
+            `Пропущено студента ${lastName} ${firstName}: невалідний email`
+          );
+          skippedCount++;
+          continue;
+        }
+
+        if (!validatePhone(phone)) {
+          console.warn(
+            `Пропущено студента ${lastName} ${firstName}: невалідний телефон`
+          );
+          skippedCount++;
+          continue;
+        }
+
+        // Перевірка унікальності
+        if (!studentGroup.isEmailUnique(email)) {
+          console.warn(
+            `Пропущено студента ${lastName} ${firstName}: email вже існує`
+          );
+          skippedCount++;
+          continue;
+        }
+
+        if (!studentGroup.isPhoneUnique(phone)) {
+          console.warn(
+            `Пропущено студента ${lastName} ${firstName}: телефон вже існує`
+          );
+          skippedCount++;
+          continue;
+        }
+
+        // Створення та додавання студента
+        const student = new Student(
+          lastName,
+          firstName,
+          middleName,
+          phone,
+          email,
+          birthDate,
+          group,
+          address,
+          educationType,
+          grades
+        );
+
+        studentGroup.addStudent(student);
+        addedCount++;
+      } catch (parseError) {
+        console.error("Помилка парсингу блоку студента:", parseError);
+        return {
+          success: false,
+          error: `Помилка парсингу даних студента: ${parseError.message}`,
+        };
+      }
+    }
+
+    if (addedCount === 0 && skippedCount === 0) {
+      return {
+        success: false,
+        error: "Файл не містить валідних даних студентів",
+      };
+    }
+
+    return {
+      success: true,
+      added: addedCount,
+      skipped: skippedCount,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: `Критична помилка: ${error.message}`,
+    };
+  }
+}
+
 // Початкове відображення студентів при завантаженні сторінки
 displayStudents();
 

@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 <html lang="uk">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Курсова робота</title>
     <link rel="stylesheet" href="./css/style.css">
 </head>
+
 <body>
     <div class="container">
         <!-- Ліва панель - Сортування -->
         <div class="sort-panel">
             <h2>Сортування</h2>
-            
+
             <div class="sort-section">
                 <h3>Поле сортування</h3>
                 <div class="sort-buttons" id="sortFieldButtons">
@@ -42,7 +44,8 @@
             <div class="search-section">
                 <h3>Пошук студента</h3>
                 <div class="search-group">
-                    <input type="text" id="searchInput" placeholder="Введіть дані для пошуку (ім'я, прізвище, група, телефон тощо)">
+                    <input type="text" id="searchInput"
+                        placeholder="Введіть дані для пошуку (ім'я, прізвище, група, телефон тощо)">
                     <button onclick="searchStudents()">Шукати</button>
                     <button class="reset-btn" onclick="resetSearch()">Скинути</button>
                 </div>
@@ -63,6 +66,12 @@
                 <button class="apply-btn" onclick="downloadStudentsList()" style="margin: 0;">
                     📥 Завантажити список студентів (.txt)
                 </button>
+                <input type="file" id="fileInput" accept=".txt" style="display: none;"
+                    onchange="handleFileUpload(event)">
+                <button class="apply-btn" onclick="document.getElementById('fileInput').click()">
+                    📤 Завантажити файл на сайт (.txt)
+                </button>
+                <div id="uploadStatus" style="margin-top: 10px; font-size: 14px;"></div>
             </div>
         </div>
 
@@ -70,7 +79,7 @@
         <div class="add-panel">
             <h2>Дані про нового студента</h2>
             <div id="formError"></div>
-            
+
             <div class="form-group">
                 <label>Прізвище</label>
                 <input type="text" id="lastName" placeholder="Введіть прізвище">
@@ -137,7 +146,7 @@
         <div class="modal-content">
             <h3>Редагування студента</h3>
             <div id="editError"></div>
-            
+
             <div class="form-group">
                 <label>Прізвище</label>
                 <input type="text" id="editLastName">
@@ -199,4 +208,5 @@
     </div>
     <script src="./js/script.js"></script>
 </body>
+
 </html>

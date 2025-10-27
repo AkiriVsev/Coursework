@@ -264,7 +264,7 @@ body {
   font-size: 24px;
 }
 
-/* Центральна панель - кнопка завантаження списку студентів*/
+/* Центральна панель - кнопка завантаження та вивантаження списку студентів*/
 
 .download-panel {
   background: white;
@@ -273,6 +273,11 @@ body {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   text-align: center;
 }
+
+.download-panel>button:hover {
+  background: #2ecc71;
+}
+
 
 /* Права панель - Форма додавання */
 .add-panel {
@@ -484,6 +489,11 @@ body {
   .search-section,
   .download-panel {
     border-radius: 0px;
+  }
+
+  .students-container{
+    max-height: 700px;
+    overflow-y: auto;
   }
 
   .student-info {
